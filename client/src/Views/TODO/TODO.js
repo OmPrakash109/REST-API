@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Styles from './TODO.module.css'
 import { dummy } from './dummy'
-import axios from 'axios';
+import axios from 'axios';  // axios is an npm module that we use make to make API call from the client
 
 export function TODO(props) {
 
@@ -11,93 +11,26 @@ export function TODO(props) {
 
     useEffect(() => {
         const fetchTodo = async () => {
-            const apiData = await getTodo()
-            setTodoData(apiData);
+            setTodoData(dummy);
             setLoading(false)
         }
         fetchTodo();
     }, [])
 
     const getTodo = async () => {
-        const options = {
-            method: "GET",
-            url: `http://localhost:8000/api/todo`,
-            headers: {
-                accept: "application/json",
-            }
-        }
-        try {
-            const response = await axios.request(options)
-            return response.data
-        } catch (err) {
-            console.log(err);
-            return []; // return an empty array in case of error
-        }
+     
     }
 
     const addTodo = () => {
-        const options = {
-            method: "POST",
-            url: `http://localhost:8000/api/todo`,
-            headers: {
-                accept: "application/json",
-            },
-            data: {
-                title: newTodo
-            }
-        }
-        axios
-            .request(options)
-            .then(function (response) {
-                console.log(response.data)
-                setTodoData(prevData => [...prevData, response.data.newTodo])
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+  
     }
 
     const deleteTodo = (id) => {
-        const options = {
-            method: "DELETE",
-            url: `http://localhost:8000/api/todo/${id}`,
-            headers: {
-                accept: "application/json",
-            }
-        }
-        axios
-            .request(options)
-            .then(function (response) {
-                console.log(response.data)
-                setTodoData(prevData => prevData.filter(todo => todo._id !== id))
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+
     };
 
     const updateTodo = (id) => {
-        const todoToUpdate = todoData.find(todo => todo._id === id)
-        const options = {
-            method: "PATCH",
-            url: `http://localhost:8000/api/todo/${id}`,
-            headers: {
-                accept: "application/json",
-            },
-            data: {
-                ...todoToUpdate,
-                done: !todoToUpdate.done
-            }
-        }
-        axios
-            .request(options)
-            .then(function (response) {
-                console.log(response.data)
-                setTodoData(prevData => prevData.map(todo => todo._id === id ? response.data : todo))
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+
     };
 
     return (
