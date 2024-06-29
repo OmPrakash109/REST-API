@@ -1,20 +1,13 @@
-const express = require('express'); //require is keyword used to import module from server
-const mongoose = require('mongoose');
-const todo = require("./todo"); // imported todo to use the function created in todo
+const express = require('express');      //require is keyword used to import module from server
+const connectMongoDB = require('./config/db');
+const todo = require("./models/todo");         // imported todo to use the function created in todo
 require('dotenv').config();
 
 const app = express();       // express() is a constructor function which creates a express application with the help of which we can handle all the rquest and response
 app.use(express.json());     // .use() is method to handle all the middleware(functions that our app should alongwith creating this particular object), here with .use(), we are telling our application to use json parser for incoming and outgoind data
 
-
-//mongodb://url:port/?username={}?password={}/dbname
-mongoose.connect(process.env.MONGO_URI) // mongoose.connect() is used to connect to mongoDB Database, it takes uri/connection string as argument also we can write which database it should particularly connect to,  as it has something to do with server, it is async function or promise so it returns a promise so to handle that we will write .then() and .catch() method
-.then(() => {                                                   //as mongo creates database on the fly so we can directly write here /database_name also we have created empty collection in todoapp db just to make it visible under localhost
-    console.log("Successfully connected to MongoDB");
-})
-.catch((err) => {
-    console.log(`Error connecting to DB ${err.message}`)
-});
+//Connect Database
+connectMongoDB();
 
 const PORT = process.env.PORT || 8000;           // telling our application that server should listen to port 8000
 
