@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Styles from './TODO.module.css'
 import { dummy } from './dummy'
-import axios from 'axios';
+import axios from 'axios';   // axios is an npm module that we use make to make API call from the client
 
 export function TODO(props) {
 
