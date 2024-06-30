@@ -155,13 +155,22 @@ export function TODO(props) {
                                     />
                                     {entry.title}                   {/*This entry.title will display the added todos along with previously added todos that are there in 'todoData' state variable of useState, on client page*/}
                                 </span>
+                                <span>
+                                    <select>
+                                        <option>Edit</option>
+                                        <option>Add Description</option>
+                                    </select>
+                                </span>
+                                <span>
+                                    <button>Save</button>
+                                </span>
                                 <span
                                     style={{ cursor: 'pointer' }}
                                     onClick={() => {
                                         deleteTodo(entry._id);
                                     }}
                                 >
-                                    Delete
+                                    <button>Delete</button>
                                 </span>
                             </div>
                         ))
