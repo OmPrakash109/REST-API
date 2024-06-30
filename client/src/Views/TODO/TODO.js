@@ -11,7 +11,7 @@ export function TODO(props) {
                                                          //newTodo useState() will have the title of the object/document as for creating an object/document, we only require title as a necessity   
                                                         //we just have to get the data from the newTodo useState() and pass that as an object in the body of the api call that we do through axios
 
-    const [todoData, setTodoData] = useState([]);    // 'todoData , setToDoData' is being used to store the fetched data with API from DB in 'todoData'
+    const [todoData, setTodoData] = useState([]);    // 'todoData , setToDoData' is being used to store the fetched data with API from DB in 'todoData'   //Also the useState doesn't get update immediately on calling an API, so we have to update it manually in the API(in add, update and delete and not get, as get's called automatically as it is inside useEffect so that the data gets updated immediately in the client
     const [loading, setLoading] = useState(true);
     console.log("todoDate", todoData);
 
@@ -24,7 +24,7 @@ export function TODO(props) {
         fetchTodo();
     }, [])
 
-    //We have to define out API calls within these 4 function : getTodo(), addTodo(), deleteTodo(), updateTodo()
+    //We have to define out API calls within these 4 function : getTodo(), addTodo(), deleteTodo(), updateTodo() and with this we are integrating our client with our server
     const getTodo = async () => {              // getTodo() async method of api call, sort of handled by 'todoData' state variable as data fetch karke 'todoDate' me rakhte
         const options = {               //first we define options because we pass these options to axios and these options will tell what sort of request should we do, what sort of method should we use for that request, what is the endpoint(url) i have to hit for that request
             method: "GET",
@@ -35,7 +35,7 @@ export function TODO(props) {
         }
         try {
             const response = await axios.request(options) //.request() is a method axios uses to make any sort of API request
-            return response.data;    // there are many stuffs in response and we just need data, so we returned response.data       
+            return response.data;    // Here we are returing the response.data as we are sort of fetching data from DB and there are many stuffs in response and we just need data, so we returned response.data       
         } catch (err) {
             console.log(err);
             return [];          // if it is erroring out the getTodo() should fetch a empty list as if it will be empty list so .length() will be zero so it'll just tell 'No task available' as written return section of this xml
@@ -57,34 +57,55 @@ export function TODO(props) {
         .request(options) // since it returns a promise so we'll handle it using .then and .catch
         .then(response => {
             console.log(response.data)  //in 'response' the data is actually in data so we write response.data
-            setTodoData(prevData => [...prevData, response.data])  //Here we are just deconstructing the list of objects and attaching this response.data that is whatever the object i am getting back from the new response
-        })
-        .catch(error => {
+            setTodoData(prevData => [...prevData, response.data])         //Here we are adding the new response.data to 'todoData' (with help of 'setTodoData') as we are storing the data entered by user which is ready to be displayed on clicking button
+            })                                                               //And we are here deconstructing the list of objects and attaching this response.data that is whatever the object/document i am getting back from the 'create' API which is the new object/document i.e todo, that got created in the database so that is coming back in the response and we attached it here 
+        .catch(error => {                                                                   //by doing this, the 'todoData' useState will get updated immediately so if we add any todo, it will be immediately reflected in the client without having to refresh the page and it will stay there after refreshing also
             console.log(error)
         })
   
     }
 
-    const deleteTodo = (id) => {
+    const deleteTodo = async (id) => {
         const options = {
             method: "DELETE",
-            url: `http://localhost:8000/api/todo/${id}`,
+            url: `http://localhost:8000/api/todo/${id}`,  // in both deleteTodo and updateTodo, whatever the id we get while deleteTodo(entry.id) or updateTodo(entry.id) id called, we pass at endpoint (url of options)
             headers: {
-                accept: "application/json"
+                accept: "application.json"
             }
         }
 
+        try{
+            const response = await axios.request(options);
+            console.log(response.data);
+            setTodoData(prevData => prevData.filter(todo => todo._id !== id));   // Here again to immediately reflect that deleteTodo API is successfully called and the given id will be deleted instanly, we are writing 'setTodoData' useState and here prevData is a list of all the data objects in DB and we're filtering out that array based on condition that the given id should not be there in filtered array
 
-    };
-
-    const updateTodo = (id) => {
+        } catch(err) {
+            console.log(err);
+        }
+    }
+    const updateTodo = (id) => {   //In updateTodo(), only 'done' of the selected object(with id) will be updated and nothing else which will facilitate the check-uncheck of checkbox
+        const todoToUpdate = todoData.find(todo => todo._id === id);    //first we find the object Iin the todoData) with the id that we are passing so it'll get the object that needs to be updated
         const options = {
             method: "PATCH",
             url: `http://localhost:8000/api/todo/${id}`,
             headers: {
                 accept: "application/json"
+            },
+            data: {
+                ...todoToUpdate,  //deconstructing the todoToUpdate 
+                done: !todoToUpdate.done // we also add data in options to tell what update we have to do in the data/object/document of that id
             }
         }
+        axios
+        .request(options)
+        .then(response => {
+            console.log(response);
+            setTodoData(preData => preData.map(todo => todo._id === id ? response.data : todo))  //here we are mapping over each of the todos and we are saying whichever todo has current id, set it as respose.data as that'll have the new updated value from the DB, otherwise set it as the todo itself
+
+        })
+        .then((err) => {
+            console.log(err);
+        })
     };
 
     return (
@@ -132,7 +153,7 @@ export function TODO(props) {
                                             updateTodo(entry._id);
                                         }}
                                     />
-                                    {entry.title}
+                                    {entry.title}                   {/*This entry.title will display the added todos along with previously added todos that are there in 'todoData' state variable of useState, on client page*/}
                                 </span>
                                 <span
                                     style={{ cursor: 'pointer' }}
