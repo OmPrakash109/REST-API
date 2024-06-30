@@ -1,13 +1,24 @@
 const express = require('express');      //require is keyword used to import module from server and express handles the request/response part
+const cors = require('cors');       //after importing 'cors' we have to tell the api to use it, here order matters, we have the cors policy before the end points i.e. before Routes
 const connectMongoDB = require('./config/db');
 const todoRoutes = require('./routes/todo');
 require('dotenv').config();
+
 
 const app = express();       // express() is a constructor function which creates a express application with the help of which we can handle all the rquest and response
 app.use(express.json());     // .use() is method to handle all the middleware(functions that our app should alongwith creating this particular object), here with .use(), we are telling our application to use json parser for incoming and outgoind data
 
 //Connect Database
 connectMongoDB();
+
+//CORS Policy : policy set on server to say, where the API call can originate from
+//We have to set cors policy before API hits endpoint, so we define it before Routes
+app.use(cors({      // we pass an object to the cors function and in this object, we pass the list of origins that are allowed 
+    origin: [
+        'http://localhost:3000'     //For us, the origin is our client url(localhost:3000) that is where the API call is originating from, as we checked in Network section of inspect of our react client
+    ],
+    credentials: true
+}));  
 
 //Routes
 app.use('/api/todo', todoRoutes);       //we have base route here that is calling todoRoutes

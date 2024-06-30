@@ -6,7 +6,7 @@ const todo = require("../models/todo");        // imported todo to use the funct
 exports.getAllTodos = async (req, res) => {           
 
     try {
-        const allTodos = await todo.find();             // as todo is an instance of mongoose model so it will have all the mongoose function which is mongoDB functions availabel for it like here we use .find() to list all the available documents in a collections and if we pass any parameter in the querry than it will documents based on that 
+        const allTodos = await todo.find();             // as todo is an instance of mongoose model so it will have all the mongoose function which is mongoDB functions availabel for it like here we use .find() to list all the available documents in a collections and if we pass any parameter in the querry than it will document based on that 
                                                         // also here we are awaiting till the promise of fetching all the todos from the database is executed
                                                         // async function will be halted till the function after await is done executing
         return res.status(200).send(allTodos);        // after fetching data we also have add it to the response object and send it back with a proper status code
@@ -19,7 +19,7 @@ exports.getAllTodos = async (req, res) => {
 exports.createTodo = async (req, res) => {   // we can have two end points to be same as the methods are different so they are treated as two different end points
     try {
         const newTodo = await todo.create(req.body)       // Mongoose uses .create() to create a new document/s and it takes a parameter 'req.body' which means whatever we send in body is in req.body, take that information and inset into the DB
-        return res.status(201).send({newTodo});     // successful post status code : 201
+        return res.status(201).send(newTodo);     //we don't want to send the 'newTodo' as nested object so we didn't enclse it in curly braces and we are sending the 'newTodo' whatever is coming  // successful post status code : 201  
     } catch (err) {
         console.log(`Error: ${err.message}`);
         return res.status(400).send({message: 'Error creating a new todo'})
