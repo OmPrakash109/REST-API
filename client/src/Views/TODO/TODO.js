@@ -108,6 +108,29 @@ export function TODO(props) {
         })
     };
 
+    const addDescription = () => {
+        let isAddDescription = window.confirm("Do you want to add description for this task ?");
+        if(isAddDescription) {
+            window.prompt("Enter the description :", );
+        }
+        // const options = {
+        //     method: "POST",
+        //     url: "http://localhost:8000/api/todo"
+        //     headers: {}
+    }   // }
+
+    const editData = () => {
+        let isEditTitle = window.confirm("Do you want to edit the title of this taks ?");
+        if (isEditTitle) {
+            window.prompt("Enter the new title:");
+        }
+        let isEditDescription = window.confirm("Do you want to edit the description of this task ?"); 
+        if (isEditDescription){
+            window.prompt("Enter the new description:");
+        }
+    }
+   
+
     return (
         <div className={Styles.ancestorContainer}>
             <div className={Styles.headerContainer}>
@@ -132,6 +155,7 @@ export function TODO(props) {
                         onClick={() => {
                             addTodo()          //with addTodo(), we'll call the 'post' api which post the data whatever it takes, here it takes the data of {newTodo} which is the title of the document/object which is sufficient to create or add
                             setNewTodo('')
+                            addDescription();
                         }}
                     >
                         + New Todo
@@ -155,14 +179,12 @@ export function TODO(props) {
                                     />
                                     {entry.title}                   {/*This entry.title will display the added todos along with previously added todos that are there in 'todoData' state variable of useState, on client page*/}
                                 </span>
-                                <span>
-                                    <select>
-                                        <option>Edit</option>
-                                        <option>Add Description</option>
-                                    </select>
-                                </span>
-                                <span>
-                                    <button>Save</button>
+
+                                <span
+                                    style = {{cursor : 'pointer', margin: '20px', fontSize: '17px'}}
+                                    onClick = {() => {editData()}}
+                                >
+                                    Edit
                                 </span>
                                 <span
                                     style={{ cursor: 'pointer' }}
@@ -170,7 +192,7 @@ export function TODO(props) {
                                         deleteTodo(entry._id);
                                     }}
                                 >
-                                    <button>Delete</button>
+                                    Delete
                                 </span>
                             </div>
                         ))
