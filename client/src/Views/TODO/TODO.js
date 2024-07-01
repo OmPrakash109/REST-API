@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Styles from './TODO.module.css'
 import { dummy } from './dummy'
-import axios from 'axios';  // axios is an npm module that we use make to make API call from the client
+import axios from 'axios';  // axios is an npm module that we use make to make API call from the client so we install it in client with 'npm i axios'
 
 // To make the server accept the request from the client, we install a npm module 'npm i cors' in server folder and we have to import the module in server.js file of server folder
 
