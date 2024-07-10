@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react'
-import Styles from './TODO.module.css'
-import { dummy } from './dummy'
-import axios from 'axios';  // axios is an npm module that we use make to make API call from the client so we install it in client with 'npm i axios'
+import { useEffect, useState } from 'react';
+import Styles from './TODO.module.css';
+import axios from 'axios';  // axios is an npm module that we use make to make API call from the client to the server so we install it in client with 'npm i axios'
+// require('dotenv').config();
+                            // To make the server accept the request from the client, we install a npm module 'npm i cors' in server folder and we have to import the module in server.js file of server folder
 
-// To make the server accept the request from the client, we install a npm module 'npm i cors' in server folder and we have to import the module in server.js file of server folder
-
-export function TODO(props) {
+export function TODO(props) {   //props(parameter/s of outmost function of any .js file in react) is used to grab the value of 'props' when it is defined in some other file as <TODO props = "somthing"/> (for example in main App file for the function to be used/called/feature_or_value_diaplayed inside main App file in that particular <div></div> in which is it written) basically jo use us function ko use karna chahta hai value dal ke use kar le
     // We use useState() hook to manage the state change
     const [newTodo, setNewTodo] = useState('');          // 'newTodo, setNewTodo' useState is being used to store and update the data in 'newTodo' entered in text box of "+ New Task" button, after getting a data it sends it to DB using addTodo() and 'newTodo' becomes '' empty again as written in code
                                                          //newTodo useState() will have the title of the object/document as for creating an object/document, we only require title as a necessity   
@@ -13,7 +12,7 @@ export function TODO(props) {
 
     const [todoData, setTodoData] = useState([]);    // 'todoData , setToDoData' is being used to store the fetched data with API from DB in 'todoData'   //Also the useState doesn't get update immediately on calling an API, so we have to update it manually in the API(in add, update and delete and not get, as get's called automatically as it is inside useEffect so that the data gets updated immediately in the client
     const [loading, setLoading] = useState(true);
-    console.log("todoDate", todoData);
+    // console.log("todoDate", todoData);   //for checking
 
     useEffect(() => {     //as soon as the page loads/rerenders, the functions inside will be called
         const fetchTodo = async () => {
@@ -28,7 +27,7 @@ export function TODO(props) {
     const getTodo = async () => {              // getTodo() async method of api call, sort of handled by 'todoData' state variable as data fetch karke 'todoDate' me rakhte
         const options = {               //first we define options because we pass these options to axios and these options will tell what sort of request should we do, what sort of method should we use for that request, what is the endpoint(url) i have to hit for that request
             method: "GET",
-            url: "http://localhost:8000/api/todo",
+            url: `${process.env.REACT_APP_SERVER_URL}/api/todo`,
             headers: {
                 accept: "application/json"
             }
@@ -45,12 +44,12 @@ export function TODO(props) {
     const addTodo = () => {       //sort of handled by 'newTodo' state variable as 'newTodo' ke value ko add kiya DB me
         const options = {
             method: "POST",
-            url: "http://localhost:8000/api/todo",
+            url: `${process.env.REACT_APP_SERVER_URL}/api/todo`,
             headers: {
                 accept: "application/json"
             },
             data: {    //In options of 'post' api we also write 'data' to send the data what needs to be posted, in the body
-                title: newTodo
+                title: newTodo  //
             }
         }
         axios               // for getTodo API call, we used async await format to handle the asyn operation and we are using Promise format, both are valid
@@ -68,7 +67,7 @@ export function TODO(props) {
     const deleteTodo = async (id) => {
         const options = {
             method: "DELETE",
-            url: `http://localhost:8000/api/todo/${id}`,  // in both deleteTodo and updateTodo, whatever the id we get while deleteTodo(entry.id) or updateTodo(entry.id) id called, we pass at endpoint (url of options)
+            url: `${process.env.REACT_APP_SERVER_URL}/api/todo/${id}`,  // in both deleteTodo and updateTodo, whatever the id we get while deleteTodo(entry.id) or updateTodo(entry.id) id called, we pass at endpoint (url of options)
             headers: {
                 accept: "application.json"
             }
@@ -84,10 +83,10 @@ export function TODO(props) {
         }
     }
     const updateTodo = (id) => {   //In updateTodo(), only 'done' of the selected object(with id) will be updated and nothing else which will facilitate the check-uncheck of checkbox
-        const todoToUpdate = todoData.find(todo => todo._id === id);    //first we find the object Iin the todoData) with the id that we are passing so it'll get the object that needs to be updated
+        const todoToUpdate = todoData.find(todo => todo._id === id);    //first we find the object (in the todoData) with the id that we are passing so it'll get the object that needs to be updated
         const options = {
             method: "PATCH",
-            url: `http://localhost:8000/api/todo/${id}`,
+            url: `${process.env.REACT_APP_SERVER_URL}/api/todo/${id}`,
             headers: {
                 accept: "application/json"
             },
@@ -99,11 +98,11 @@ export function TODO(props) {
         axios
         .request(options)
         .then(response => {
-            console.log(response);
+            console.log(response.data);
             setTodoData(preData => preData.map(todo => todo._id === id ? response.data : todo))  //here we are mapping over each of the todos and we are saying whichever todo has current id, set it as respose.data as that'll have the new updated value from the DB, otherwise set it as the todo itself
 
         })
-        .then((err) => {
+        .catch((err) => {
             console.log(err);
         })
     };
@@ -115,7 +114,7 @@ export function TODO(props) {
         }
         // const options = {
         //     method: "POST",
-        //     url: "http://localhost:8000/api/todo"
+        //     url: "${process.env.REACT_APP_SERVER_URL}/api/todo"
         //     headers: {}
     }   // }
 

@@ -3,10 +3,12 @@ const todo = require("../models/todo");        // imported todo to use the funct
 
 //To handle errors in async functions, we put it inside a try-catch block
 //In the todo collection, only store the data related to any todo or a task
-exports.getAllTodos = async (req, res) => {           
 
+// Here we are defining functions to handle API request send by the client, in the same fashion as in client, for example if client want to add some data on database(or it need to get added on DB) then there it will write API call async function for this, named something like 'addTodo', so to handle that request and sent the suitable response, here we also write async function named 'addTodo'
+exports.getAllTodos = async (req, res) => {           
+    
     try {
-        const allTodos = await todo.find();             // as todo is an instance of mongoose model so it will have all the mongoose function which is mongoDB functions availabel for it like here we use .find() to list all the available documents in a collections and if we pass any parameter in the querry than it will document based on that 
+        const allTodos = await todo.find();             // as todo is an instance of mongoose model so it will have all the mongoose function which is mongoDB functions availabel for it like here we use .find() to list all the available documents in a collections and if we pass any parameter in the querry than it will document based on that   
                                                         // also here we are awaiting till the promise of fetching all the todos from the database is executed
                                                         // async function will be halted till the function after await is done executing
         return res.status(200).send(allTodos);        // after fetching data we also have add it to the response object and send it back with a proper status code
