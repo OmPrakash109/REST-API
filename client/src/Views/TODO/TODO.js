@@ -6,13 +6,12 @@ import axios from 'axios';  // axios is an npm module that we use make to make A
 
 export function TODO(props) {   //props(parameter/s of outmost function of any .js file in react) is used to grab the value of 'props' when it is defined in some other file as <TODO props = "somthing"/> (for example in main App file for the function to be used/called/feature_or_value_diaplayed inside main App file in that particular <div></div> in which is it written) basically jo use us function ko use karna chahta hai value dal ke use kar le
     // We use useState() hook to manage the state change
+    const [todoData, setTodoData] = useState([]);    // 'todoData , setToDoData' is being used to store the fetched data with API from DB in 'todoData'   //Also the useState doesn't get update immediately on calling an API, so we have to update it manually in the API(in add, update and delete and not get, as get's called automatically as it is inside useEffect so that the data gets updated immediately in the client
     const [newTodo, setNewTodo] = useState('');          // 'newTodo, setNewTodo' useState is being used to store and update the data in 'newTodo' entered in text box of "+ New Task" button, after getting a data it sends it to DB using addTodo() and 'newTodo' becomes '' empty again as written in code
                                                          //newTodo useState() will have the title of the object/document as for creating an object/document, we only require title as a necessity   
                                                         //we just have to get the data from the newTodo useState() and pass that as an object in the body of the api call that we do through axios
-
-    const [todoData, setTodoData] = useState([]);    // 'todoData , setToDoData' is being used to store the fetched data with API from DB in 'todoData'   //Also the useState doesn't get update immediately on calling an API, so we have to update it manually in the API(in add, update and delete and not get, as get's called automatically as it is inside useEffect so that the data gets updated immediately in the client
     const [loading, setLoading] = useState(true);
-    // console.log("todoDate", todoData);   //for checking
+    const [editId, setEditId] = useState(null);
 
     useEffect(() => {     //as soon as the page loads/rerenders, the functions inside will be called
         const fetchTodo = async () => {
@@ -21,7 +20,7 @@ export function TODO(props) {   //props(parameter/s of outmost function of any .
             setLoading(false)
         }
         fetchTodo();
-    }, [])
+    }, [])  //here we are giving empty array [] as dependency array so that whenever the value of 'apiData' state variable changes, the useEffect() will render the fetchTodo api call
 
     //We have to define out API calls within these 4 function : getTodo(), addTodo(), deleteTodo(), updateTodo() and with this we are integrating our client with our server
     const getTodo = async () => {              // getTodo() async method of api call, sort of handled by 'todoData' state variable as data fetch karke 'todoDate' me rakhte
@@ -107,28 +106,41 @@ export function TODO(props) {   //props(parameter/s of outmost function of any .
         })
     };
 
-    const addDescription = () => {
-        let isAddDescription = window.confirm("Do you want to add description for this task ?");
-        if(isAddDescription) {
-            window.prompt("Enter the description :", );
-        }
-        // const options = {
-        //     method: "POST",
-        //     url: "${process.env.REACT_APP_SERVER_URL}/api/todo"
-        //     headers: {}
-    }   // }
-
-    const editData = () => {
-        let isEditTitle = window.confirm("Do you want to edit the title of this taks ?");
-        if (isEditTitle) {
-            window.prompt("Enter the new title:");
-        }
-        let isEditDescription = window.confirm("Do you want to edit the description of this task ?"); 
-        if (isEditDescription){
-            window.prompt("Enter the new description:");
+    const updateTodoEdit = async (id) => {
+        if (!editId) {
+            const todoToUpdate = todoData.find(((item) => item._id == id ));
+            setNewTodo(todoToUpdate.title);
+            setEditId(id);
+        } else {
+            const options = {
+                method: 'PATCH',
+                url: `${process.env.REACT_APP_SERVER_URL}/api/todo/${id}`,
+                headers: {
+                    accept: 'application/json'
+                },
+                data: {
+                    title: newTodo
+                }
+            }
+            try {
+                const response = await axios.request(options);
+                setTodoData(prevData => prevData.map((item) => item._id == editId ? response.data : item));
+                setEditId(null);
+                setNewTodo('');
+            } catch (err) {
+                console.log(err);
+            }
         }
     }
-   
+
+    const handleSubmit = () => {
+        if (editId) {
+            updateTodoEdit(editId);
+        } else {
+            addTodo();
+        }
+    }
+    
 
     return (
         <div className={Styles.ancestorContainer}>
@@ -151,13 +163,9 @@ export function TODO(props) {   //props(parameter/s of outmost function of any .
                         id='addButton'
                         name='add'
                         className={Styles.addButton}
-                        onClick={() => {
-                            addTodo()          //with addTodo(), we'll call the 'post' api which post the data whatever it takes, here it takes the data of {newTodo} which is the title of the document/object which is sufficient to create or add
-                            setNewTodo('')
-                            addDescription();
-                        }}
+                        onClick={handleSubmit}
                     >
-                        + New Todo
+                        {editId ? "Update Todo" : "+ New Todo"}
                     </button>
                 </span>
             </div>
@@ -181,7 +189,7 @@ export function TODO(props) {   //props(parameter/s of outmost function of any .
 
                                 <span
                                     style = {{cursor : 'pointer', margin: '20px', fontSize: '17px'}}
-                                    onClick = {() => {editData()}}
+                                    onClick = {() => updateTodoEdit(entry._id)}
                                 >
                                     Edit
                                 </span>

@@ -16,12 +16,12 @@ connectMongoDB();
 //We have to set cors policy before API hits endpoint, so we define it before Routes
 app.use(cors({      // we pass an object to the cors function and in this object, we pass the list of origins that are allowed 
     origin: [
-        '*'                                 //Update - for mongoDB we used '*' so that it can sort of connect from anywhere
-                           // added            
+        '*',                                //Update - for mongoDB we used '*' so that it can sort of connect from anywhere
+        "https://todoapp-client-zeta.vercel.app"               // If we don't write deployment domain client link(likes of vercel), and we use localhost then don't write https, just write http       
                         //old - For us, the origin is our client url(localhost:3000) that is where the API call is originating from, as we checked in Network section of inspect of our react client
     ],
     credentials: true
-}));  
+})); 
 
 //Routes ---- In routes, in endpoint of 'app.' mehthods, anything after '/' is after localhost:8000, means from that root/points onwards it will take whatever is there in the routes file and in the routes file we started from '/' means whatever we difine in server.js, the routes takes from that point onwards
 app.use('/api/todo', todoRoutes);       //we have base route here that is calling todoRoutes, when we are connecting routes, it takes two parameters, 1st is end point and second is variable storing the imported routes

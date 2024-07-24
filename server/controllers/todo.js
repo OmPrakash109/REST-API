@@ -20,7 +20,7 @@ exports.getAllTodos = async (req, res) => {
 
 exports.createTodo = async (req, res) => {   // we can have two end points to be same as the methods are different so they are treated as two different end points
     try {
-        const newTodo = await todo.create(req.body)       // Mongoose uses .create() to create a new document/s and it takes a parameter 'req.body' which means whatever we send in body is in req.body, take that information and inset into the DB
+        const newTodo = await todo.create(req.body)       // Mongoose uses .create() to create a new document/s and it takes a parameter 'req.body' which means whatever we send/write in frontend, will get stored in req.body, take that information and inset into the DB (through the model)
         return res.status(201).send(newTodo);     //we don't want to send the 'newTodo' as nested object in response, so we didn't enclose it in curly braces and we are sending the 'newTodo' whatever is coming(same with deleteTodo) // successful post status code : 201  
     } catch (err) {
         console.log(`Error: ${err.message}`);
@@ -30,7 +30,7 @@ exports.createTodo = async (req, res) => {   // we can have two end points to be
 
 exports.updateTodo = async(req, res) => {      //For updating, we use .patch() and we need to give an id for it to patch so as to tell which document needs to be updated and we pass /:id as url parameter(works as a variable) and this id is stored in req.params so to access it, we can write req.params.id
     try{
-        const updatedTodo = await todo.findByIdAndUpdate(req.params.id, req.body, {new: true}); // .findByIdAndUpdate() is used to find document by id and then update it, it takes two parameters, 1st is the id of the object/document that needs to be updated and 2nd is what value to update it with, also it can take 3rd argument  which is object {new : true} so that the const variable get the latest updated value
+        const updatedTodo = await todo.findByIdAndUpdate(req.params.id, req.body, {new: true}); // .findByIdAndUpdate() is used to find document by id and then update it, it takes 3 parameters, 1st is the id of the object/document that needs to be updated and 2nd is what value to update it with, also it can take 3rd argument  which is object {new : true} so that the const variable(updatedTodo) get the latest updated value
         return res.status(200).send(updatedTodo);
     } catch (err) {
         console.log(`Error: ${err.message}`);
